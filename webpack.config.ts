@@ -1,9 +1,12 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+import "webpack-dev-server";
+
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import * as path from "path";
+import * as webpack from "webpack";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const config = {
+const config: webpack.Configuration = {
   entry: "./src/index.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -38,10 +41,10 @@ const config = {
   },
 };
 
-module.exports = () => {
+export default () => {
   if (isProduction) {
     config.mode = "production";
   }
-  
+
   return config;
 };
