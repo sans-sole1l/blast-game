@@ -1,12 +1,15 @@
 import "webpack-dev-server";
 
+import CopyPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import * as path from "path";
+import TerserPlugin from "terser-webpack-plugin";
 import * as webpack from "webpack";
 
 const isProduction = process.env.NODE_ENV === "production";
 
 const config: webpack.Configuration = {
+  stats: "minimal",
   entry: "./src/index.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -21,8 +24,11 @@ const config: webpack.Configuration = {
     new HtmlWebpackPlugin({
       template: "index.html",
     }),
+    new CopyPlugin({
+      patterns: [{ from: "assets/" }],
+    }),
   ],
-  devtool: "source-map",
+  devtool: isProduction ? undefined : "source-map",
   module: {
     rules: [
       {
@@ -36,8 +42,20 @@ const config: webpack.Configuration = {
       },
     ],
   },
+  optimization: {
+    minimize: isProduction,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          ecma: 5,
+          compress: { drop_console: true },
+          output: { comments: false, beautify: false },
+        },
+      }),
+    ],
+  },
   resolve: {
-    extensions: [".tsx", ".ts", ".jsx", ".js", "..."],
+    extensions: [".tsx", ".ts", ".js"],
   },
 };
 
